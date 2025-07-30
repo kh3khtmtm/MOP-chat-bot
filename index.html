@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <title>مُخَطط المساعد الرقمي الذكي لوزارة التخطيط</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f1f1f1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      direction: rtl;
+    }
+    .chat-container {
+      width: 400px;
+      max-height: 90vh;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .chat-header {
+      background: #0d6efd;
+      color: white;
+      padding: 15px;
+      font-size: 18px;
+      text-align: center;
+    }
+    .chat-box {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .message {
+      max-width: 75%;
+      padding: 10px 15px;
+      border-radius: 20px;
+      font-size: 15px;
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
+    .user-message {
+      background: #dcf8c6;
+      align-self: flex-end;
+    }
+    .bot-message {
+      background: #f0f0f0;
+      align-self: flex-start;
+    }
+    .input-area {
+      display: flex;
+      border-top: 1px solid #ccc;
+    }
+    input {
+      flex: 1;
+      padding: 15px;
+      border: none;
+      font-size: 15px;
+      outline: none;
+    }
+    button {
+      background: #0d6efd;
+      color: white;
+      border: none;
+      padding: 0 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0b5ed7;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">🤖  مُخَطط المساعد الرقمي الذكي لوزارة التخطيط</div>
+    <div class="chat-box" id="chatBox"></div>
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="اكتب رسالتك هنا..." />
+      <button onclick="sendMessage()">إرسال</button>
+    </div>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById('chatBox');
+    const input = document.getElementById('userInput');
+
+    function appendMessage(text, className) {
+      const msg = document.createElement('div');
+      msg.className = `message ${className}`;
+      msg.textContent = text;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      appendMessage(text, 'user-message');
+      input.value = '';
+
+      appendMessage('جاري المعالجة...', 'bot-message');
+
+      try {
+        const res = await fetch('https://curious-distinct-susan-thorough.trycloudflare.com/webhooks/rest/webhook', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sender: 'user',
+            message: text
+          }),
+          mode: 'cors',
+          credentials: 'omit'
+        });
+
+        const data = await res.json();
+
+        // إزالة "جاري المعالجة..."
+        const lastBot = chatBox.querySelector('.bot-message:last-child');
+        if (lastBot) lastBot.remove();
+
+        if (data.length === 0) {
+          appendMessage('لم يتم العثور على رد 😕', 'bot-message');
+        } else {
+          data.forEach(msg => {
+            if (msg.text) {
+              appendMessage(msg.text, 'bot-message');
+            }
+          });
+        }
+      } catch (err) {
+        const lastBot = chatBox.querySelector('.bot-message:last-child');
+        if (lastBot) lastBot.remove();
+        appendMessage('حدث خطأ في الاتصال 💥', 'bot-message');
+        console.error(err);
+      }
+    }
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') sendMessage();
+    });
+  </script>
+</body>
+</html>
