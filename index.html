@@ -2,35 +2,80 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>مُخَطط المساعد الرقمي الذكي لوزارة التخطيط</title>
   <style>
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #000000;
+      --user-msg: #dcf8c6;
+      --bot-msg: #f0f0f0;
+      --header-bg: #0d6efd;
+      --header-text: #ffffff;
+      --input-border: #ccc;
+      --button-bg: #0d6efd;
+      --button-hover: #0b5ed7;
+    }
+
+    body.dark-mode {
+      --bg-color: #1e1e1e;
+      --text-color: #f0f0f0;
+      --user-msg: #2e7d32;
+      --bot-msg: #333333;
+      --header-bg: #0a58ca;
+      --header-text: #ffffff;
+      --input-border: #444;
+      --button-bg: #1a73e8;
+      --button-hover: #155ab6;
+    }
+
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #f1f1f1;
+      background: var(--bg-color);
+      color: var(--text-color);
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
       direction: rtl;
+      transition: background 0.3s, color 0.3s;
     }
+
     .chat-container {
-      width: 400px;
-      max-height: 90vh;
-      background: #fff;
+      width: 90%;
+      max-width: 500px;
+      max-height: 95vh;
+      background: var(--bg-color);
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      border: 1px solid var(--input-border);
     }
+
     .chat-header {
-      background: #0d6efd;
-      color: white;
-      padding: 15px;
-      font-size: 18px;
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 10px;
+      font-size: 16px;
       text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
+
+    .chat-header img {
+      height: 35px;
+    }
+
+    .chat-header span {
+      flex: 1;
+      margin: 0 10px;
+      font-weight: bold;
+    }
+
     .chat-box {
       flex: 1;
       padding: 10px;
@@ -39,6 +84,7 @@
       flex-direction: column;
       gap: 10px;
     }
+
     .message {
       max-width: 75%;
       padding: 10px 15px;
@@ -47,42 +93,90 @@
       line-height: 1.4;
       word-wrap: break-word;
     }
+
     .user-message {
-      background: #dcf8c6;
+      background: var(--user-msg);
       align-self: flex-end;
     }
+
     .bot-message {
-      background: #f0f0f0;
+      background: var(--bot-msg);
       align-self: flex-start;
     }
+
     .input-area {
       display: flex;
-      border-top: 1px solid #ccc;
+      border-top: 1px solid var(--input-border);
     }
+
     input {
       flex: 1;
       padding: 15px;
       border: none;
       font-size: 15px;
       outline: none;
+      background: transparent;
+      color: var(--text-color);
     }
+
     button {
-      background: #0d6efd;
+      background: var(--button-bg);
       color: white;
       border: none;
       padding: 0 20px;
       font-size: 16px;
       cursor: pointer;
+      transition: background 0.3s;
     }
+
     button:hover {
-      background: #0b5ed7;
+      background: var(--button-hover);
+    }
+
+    .toggle-dark {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 6px 10px;
+      font-size: 13px;
+      background: var(--button-bg);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 480px) {
+      .chat-header span {
+        font-size: 14px;
+      }
+
+      input {
+        padding: 12px;
+        font-size: 14px;
+      }
+
+      button {
+        font-size: 14px;
+        padding: 0 15px;
+      }
+
+      .message {
+        font-size: 14px;
+      }
     }
   </style>
 </head>
 <body>
+  <button class="toggle-dark" onclick="toggleDarkMode()">🌓 وضع داكن</button>
+
   <div class="chat-container">
-    <div class="chat-header">🤖  مُخَطط المساعد الرقمي الذكي لوزارة التخطيط</div>
+    <div class="chat-header">
+      <span>🤖 مُخَطط المساعد الرقمي الذكي لوزارة التخطيط</span>
+    </div>
+
     <div class="chat-box" id="chatBox"></div>
+
     <div class="input-area">
       <input type="text" id="userInput" placeholder="اكتب رسالتك هنا..." />
       <button onclick="sendMessage()">إرسال</button>
@@ -124,12 +218,11 @@
 
         const data = await res.json();
 
-        // إزالة "جاري المعالجة..."
         const lastBot = chatBox.querySelector('.bot-message:last-child');
         if (lastBot) lastBot.remove();
 
         if (data.length === 0) {
-          appendMessage('لم يتم العثور على رد 😕', 'bot-message');
+          appendMessage('عذرًا، لايمكنني تقديم المساعدة. يمكنك زيارة موقع الوزارة الرسمي للمزيد من المعلومات https://mop.gov.iq', 'bot-message');
         } else {
           data.forEach(msg => {
             if (msg.text) {
@@ -148,6 +241,10 @@
     input.addEventListener('keydown', e => {
       if (e.key === 'Enter') sendMessage();
     });
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+    }
   </script>
 </body>
 </html>
