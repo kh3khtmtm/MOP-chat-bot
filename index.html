@@ -66,10 +66,6 @@
       align-items: center;
     }
 
-    .chat-header img {
-      height: 35px;
-    }
-
     .chat-header span {
       flex: 1;
       margin: 0 10px;
@@ -187,6 +183,20 @@
     const chatBox = document.getElementById('chatBox');
     const input = document.getElementById('userInput');
 
+    // دالة للحصول على sender_id فريد من localStorage أو إنشاؤه جديدًا
+    function getSenderId() {
+      let senderId = localStorage.getItem('sender_id');
+      if (!senderId) {
+        if (window.crypto && window.crypto.randomUUID) {
+          senderId = 'user_' + crypto.randomUUID();
+        } else {
+          senderId = 'user_' + Math.random().toString(36).substring(2, 15);
+        }
+        localStorage.setItem('sender_id', senderId);
+      }
+      return senderId;
+    }
+
     function appendMessage(text, className) {
       const msg = document.createElement('div');
       msg.className = `message ${className}`;
@@ -204,12 +214,14 @@
 
       appendMessage('جاري المعالجة...', 'bot-message');
 
+      const senderId = getSenderId();
+
       try {
         const res = await fetch('https://mop-chatbot.loca.lt/webhooks/rest/webhook', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            sender: 'user',
+            sender: senderId,
             message: text
           }),
           mode: 'cors',
