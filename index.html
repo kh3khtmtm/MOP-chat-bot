@@ -336,7 +336,9 @@
           });
         }
       } catch (err) {
+        if (!input.disabled) {
         appendMessage('حدث خطأ في الاتصال 💥', 'bot-message');
+        }  
       } finally {
         isWaiting = false;
       }
@@ -363,6 +365,7 @@
   </script>
 </body>
 </html>
+
 
 
 
