@@ -1,4 +1,4 @@
-<!DOCTYPE html><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
@@ -260,6 +260,21 @@
     const input = document.getElementById('userInput');
     let isWaiting = false;
 
+    // ✅ توليد UUID وتخزينه في localStorage
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    let userId = localStorage.getItem('user_id');
+    if (!userId) {
+      userId = generateUUID();
+      localStorage.setItem('user_id', userId);
+    }
+
     function appendMessage(text, className) {
       const msg = document.createElement('div');
       msg.className = `message ${className}`;
@@ -294,7 +309,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            sender: 'user123',
+            sender: userId,
             message: messageText
           })
         });
@@ -340,6 +355,3 @@
   </script>
 </body>
 </html>
-
-
-
