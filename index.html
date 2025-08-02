@@ -346,7 +346,7 @@
       isWaiting = true;
       appendMessage('جاري المعالجة...', 'bot-message');
       try {
-        const res = await fetch('http://localhost:5005/webhooks/rest/webhook', {
+        const res = await fetch('https://squad-twisted-work-riding.trycloudflare.com/webhooks/rest/webhook', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -408,3 +408,4 @@
   </script>
 </body>
 </html>
+
