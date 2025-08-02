@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>مُخَطط المساعد الرقمي الذكي لوزارة التخطيط</title>
   <style>
+    /* نفس التنسيقات كما في الأصل */
     :root {
       --bg-light: #f1f1f1;
       --bg-dark: #121212;
@@ -251,16 +252,17 @@
     <div class="chat-box" id="chatBox"></div>
     <div class="input-area">
       <input type="text" id="userInput" placeholder="اكتب رسالتك هنا..." />
-      <button onclick="sendMessage()">إرسال</button>
+      <button id="sendBtn" onclick="sendMessage()">إرسال</button>
     </div>
   </div>
 
   <script>
     const chatBox = document.getElementById('chatBox');
     const input = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
     let isWaiting = false;
 
-    // ✅ توليد UUID وتخزينه في localStorage
+    // توليد UUID وتخزينه في localStorage
     function generateUUID() {
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         const r = Math.random() * 16 | 0;
@@ -273,6 +275,44 @@
     if (!userId) {
       userId = generateUUID();
       localStorage.setItem('user_id', userId);
+    }
+
+    // فحص حالة الحد المسموح عند تحميل الصفحة
+    window.onload = function () {
+      checkLimitStatus();
+      sendRasaMessage('/session_start');
+    };
+
+    function checkLimitStatus() {
+      const limitDataRaw = localStorage.getItem('limit_reached');
+      if (!limitDataRaw) {
+        enableInput();
+        return;
+      }
+      const limitData = JSON.parse(limitDataRaw);
+      if (limitData.reached) {
+        const now = Date.now();
+        if (now - limitData.timestamp < 24 * 60 * 60 * 1000) {
+          disableInputWithMessage();
+        } else {
+          localStorage.removeItem('limit_reached');
+          enableInput();
+        }
+      } else {
+        enableInput();
+      }
+    }
+
+    function disableInputWithMessage() {
+      input.disabled = true;
+      sendBtn.disabled = true;
+      input.placeholder = '⚠️ لقد بلغت الحد المسموح للمراسلة اليوم. يرجى المحاولة بعد 24 ساعة.';
+    }
+
+    function enableInput() {
+      input.disabled = false;
+      sendBtn.disabled = false;
+      input.placeholder = 'اكتب رسالتك هنا...';
     }
 
     function appendMessage(text, className) {
@@ -291,7 +331,7 @@
         button.className = 'rasa-button';
         button.textContent = btn.title;
         button.onclick = () => {
-          if (isWaiting) return;
+          if (isWaiting || input.disabled) return;
           appendMessage(btn.title, 'user-message');
           sendRasaMessage(btn.payload || btn.title);
         };
@@ -302,10 +342,11 @@
     }
 
     async function sendRasaMessage(messageText) {
+      if (input.disabled) return;  // لا ترسل إذا الحقل معطل
       isWaiting = true;
       appendMessage('جاري المعالجة...', 'bot-message');
       try {
-        const res = await fetch('https://bristol-along-bridal-ng.trycloudflare.com/webhooks/rest/webhook', {
+        const res = await fetch('http://localhost:5005/webhooks/rest/webhook', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -325,11 +366,13 @@
             if (msg.text) {
               appendMessage(msg.text, 'bot-message');
 
-              // تعطيل الإدخال لو وصلت رسالة الحد الأقصى
+              // تعطيل الإدخال وتخزين الحالة لو وصلت رسالة الحد الأقصى
               if (msg.text.includes('⚠️ لقد بلغت الحد المسموح للمراسلة اليوم. يرجى المحاولة بعد 24 ساعة.')) {
-                input.disabled = true;
-                sendBtn.disabled = true;
-                input.placeholder = '⚠️ لقد بلغت الحد المسموح للمراسلة اليوم. يرجى المحاولة بعد 24 ساعة.';
+                disableInputWithMessage();
+                localStorage.setItem('limit_reached', JSON.stringify({
+                  reached: true,
+                  timestamp: Date.now()
+                }));
               }
             }
             if (msg.buttons) appendButtons(msg.buttons);
@@ -337,8 +380,8 @@
         }
       } catch (err) {
         if (!input.disabled) {
-        appendMessage('حدث خطأ في الاتصال 💥', 'bot-message');
-        }  
+          appendMessage('حدث خطأ في الاتصال 💥', 'bot-message');
+        }
       } finally {
         isWaiting = false;
       }
@@ -365,11 +408,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
