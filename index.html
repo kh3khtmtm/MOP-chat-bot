@@ -2,37 +2,33 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>مُخَطط المساعد الرقمي الذكي لوزارة التخطيط</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --bg-color: #ffffff;
-      --text-color: #000000;
-      --user-msg: #dcf8c6;
-      --bot-msg: #f0f0f0;
-      --header-bg: #0d6efd;
-      --header-text: #ffffff;
-      --input-border: #ccc;
-      --button-bg: #0d6efd;
-      --button-hover: #0b5ed7;
+      --bg-light: #f1f1f1;
+      --bg-dark: #121212;
+      --chat-bg-light: #fff;
+      --chat-bg-dark: #1e1e1e;
+      --header-bg-light: #0d6efd;
+      --header-bg-dark: #0a58ca;
+      --text-light: #000;
+      --text-dark: #eee;
+      --user-msg-light: #dcf8c6;
+      --user-msg-dark: #2e7d32;
+      --bot-msg-light: #f0f0f0;
+      --bot-msg-dark: #333;
+      --button-bg-light: #0d6efd;
+      --button-bg-dark: #1a73e8;
+      --button-hover-light: #0b5ed7;
+      --button-hover-dark: #155ab6;
+      --input-border-light: #ccc;
+      --input-border-dark: #444;
     }
-
-    body.dark-mode {
-      --bg-color: #1e1e1e;
-      --text-color: #f0f0f0;
-      --user-msg: #2e7d32;
-      --bot-msg: #333333;
-      --header-bg: #0a58ca;
-      --header-text: #ffffff;
-      --input-border: #444;
-      --button-bg: #1a73e8;
-      --button-hover: #155ab6;
-    }
-
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: var(--bg-color);
-      color: var(--text-color);
+      background: var(--bg-light);
+      color: var(--text-light);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -40,38 +36,40 @@
       margin: 0;
       direction: rtl;
       transition: background 0.3s, color 0.3s;
+      padding: 10px;
     }
-
+    body.dark-mode {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
     .chat-container {
-      width: 90%;
-      max-width: 500px;
-      max-height: 95vh;
-      background: var(--bg-color);
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      background: var(--chat-bg-light);
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      border: 1px solid var(--input-border);
+      transition: background 0.3s;
     }
-
+    body.dark-mode .chat-container {
+      background: var(--chat-bg-dark);
+      box-shadow: 0 0 15px rgba(0,0,0,0.7);
+    }
     .chat-header {
-      background: var(--header-bg);
-      color: var(--header-text);
-      padding: 10px;
-      font-size: 16px;
+      background: var(--header-bg-light);
+      color: white;
+      padding: 15px;
+      font-size: 18px;
       text-align: center;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      user-select: none;
+      transition: background 0.3s;
     }
-
-    .chat-header span {
-      flex: 1;
-      margin: 0 10px;
-      font-weight: bold;
+    body.dark-mode .chat-header {
+      background: var(--header-bg-dark);
     }
-
     .chat-box {
       flex: 1;
       padding: 10px;
@@ -79,8 +77,23 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--button-bg-light) transparent;
+      transition: scrollbar-color 0.3s;
     }
-
+    body.dark-mode .chat-box {
+      scrollbar-color: var(--button-bg-dark) transparent;
+    }
+    .chat-box::-webkit-scrollbar {
+      width: 6px;
+    }
+    .chat-box::-webkit-scrollbar-thumb {
+      background-color: var(--button-bg-light);
+      border-radius: 3px;
+    }
+    body.dark-mode .chat-box::-webkit-scrollbar-thumb {
+      background-color: var(--button-bg-dark);
+    }
     .message {
       max-width: 75%;
       padding: 10px 15px;
@@ -88,35 +101,50 @@
       font-size: 15px;
       line-height: 1.4;
       word-wrap: break-word;
+      user-select: text;
+      transition: background 0.3s, color 0.3s;
     }
-
     .user-message {
-      background: var(--user-msg);
+      background: var(--user-msg-light);
       align-self: flex-end;
+      color: var(--text-light);
     }
-
+    body.dark-mode .user-message {
+      background: var(--user-msg-dark);
+      color: #fff;
+    }
     .bot-message {
-      background: var(--bot-msg);
+      background: var(--bot-msg-light);
       align-self: flex-start;
+      color: var(--text-light);
     }
-
+    body.dark-mode .bot-message {
+      background: var(--bot-msg-dark);
+      color: #fff;
+    }
     .input-area {
       display: flex;
-      border-top: 1px solid var(--input-border);
+      border-top: 1px solid var(--input-border-light);
+      transition: border-color 0.3s;
     }
-
+    body.dark-mode .input-area {
+      border-top: 1px solid var(--input-border-dark);
+    }
     input {
       flex: 1;
-      padding: 15px;
+      padding: 12px 15px;
       border: none;
-      font-size: 15px;
+      font-size: 16px;
       outline: none;
       background: transparent;
-      color: var(--text-color);
+      color: var(--text-light);
+      transition: color 0.3s;
     }
-
+    body.dark-mode input {
+      color: var(--text-dark);
+    }
     button {
-      background: var(--button-bg);
+      background: var(--button-bg-light);
       color: white;
       border: none;
       padding: 0 20px;
@@ -124,41 +152,88 @@
       cursor: pointer;
       transition: background 0.3s;
     }
-
     button:hover {
-      background: var(--button-hover);
+      background: var(--button-hover-light);
     }
-
+    body.dark-mode button {
+      background: var(--button-bg-dark);
+    }
+    body.dark-mode button:hover {
+      background: var(--button-hover-dark);
+    }
+    .button-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .rasa-button {
+      background: #e0e0e0;
+      border: none;
+      border-radius: 15px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+      color: #000;
+    }
+    .rasa-button:hover {
+      background: #d0d0d0;
+    }
+    body.dark-mode .rasa-button {
+      background: #444;
+      color: #eee;
+    }
+    body.dark-mode .rasa-button:hover {
+      background: #555;
+    }
     .toggle-dark {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      padding: 6px 10px;
-      font-size: 13px;
-      background: var(--button-bg);
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      background: var(--button-bg-light);
       color: white;
       border: none;
-      border-radius: 5px;
+      padding: 8px 14px;
+      font-size: 14px;
+      border-radius: 6px;
       cursor: pointer;
+      user-select: none;
+      z-index: 1000;
+      transition: background 0.3s;
+    }
+    .toggle-dark:hover {
+      background: var(--button-hover-light);
+    }
+    body.dark-mode .toggle-dark {
+      background: var(--button-bg-dark);
+    }
+    body.dark-mode .toggle-dark:hover {
+      background: var(--button-hover-dark);
+    }
+    .start-chat-btn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      font-size: 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 1000;
+      transition: background 0.3s;
+    }
+    .start-chat-btn:hover {
+      background: #218838;
     }
 
-    @media (max-width: 480px) {
-      .chat-header span {
-        font-size: 14px;
-      }
-
-      input {
-        padding: 12px;
-        font-size: 14px;
-      }
-
-      button {
-        font-size: 14px;
-        padding: 0 15px;
-      }
-
-      .message {
-        font-size: 14px;
+    @media (max-width: 600px) {
+      .chat-container {
+        max-width: 100%;
+        height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
       }
     }
   </style>
@@ -167,12 +242,8 @@
   <button class="toggle-dark" onclick="toggleDarkMode()">🌓 وضع داكن</button>
 
   <div class="chat-container">
-    <div class="chat-header">
-      <span>🤖 مُخَطط المساعد الرقمي الذكي لوزارة التخطيط</span>
-    </div>
-
+    <div class="chat-header">🤖 مُخَطط المساعد الرقمي الذكي لوزارة التخطيط</div>
     <div class="chat-box" id="chatBox"></div>
-
     <div class="input-area">
       <input type="text" id="userInput" placeholder="اكتب رسالتك هنا..." />
       <button onclick="sendMessage()">إرسال</button>
@@ -182,20 +253,7 @@
   <script>
     const chatBox = document.getElementById('chatBox');
     const input = document.getElementById('userInput');
-
-    // دالة للحصول على sender_id فريد من localStorage أو إنشاؤه جديدًا
-    function getSenderId() {
-      let senderId = localStorage.getItem('sender_id');
-      if (!senderId) {
-        if (window.crypto && window.crypto.randomUUID) {
-          senderId = 'user_' + crypto.randomUUID();
-        } else {
-          senderId = 'user_' + Math.random().toString(36).substring(2, 15);
-        }
-        localStorage.setItem('sender_id', senderId);
-      }
-      return senderId;
-    }
+    let isWaiting = false;
 
     function appendMessage(text, className) {
       const msg = document.createElement('div');
@@ -205,27 +263,35 @@
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    async function sendMessage() {
-      const text = input.value.trim();
-      if (!text) return;
+    function appendButtons(buttons) {
+      const container = document.createElement('div');
+      container.className = 'button-container';
+      buttons.forEach(btn => {
+        const button = document.createElement('button');
+        button.className = 'rasa-button';
+        button.textContent = btn.title;
+        button.onclick = () => {
+          if (isWaiting) return;
+          appendMessage(btn.title, 'user-message');
+          sendRasaMessage(btn.payload || btn.title);
+        };
+        container.appendChild(button);
+      });
+      chatBox.appendChild(container);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
 
-      appendMessage(text, 'user-message');
-      input.value = '';
-
+    async function sendRasaMessage(messageText) {
+      isWaiting = true;
       appendMessage('جاري المعالجة...', 'bot-message');
-
-      const senderId = getSenderId();
-
       try {
-        const res = await fetch('https://corners-systems-varieties-episodes.trycloudflare.com/webhooks/rest/webhook', {
+        const res = await fetch(' https://champagne-breakdown-educational-stat.trycloudflare.com/webhooks/rest/webhook', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            sender: senderId,
-            message: text
-          }),
-          mode: 'cors',
-          credentials: 'omit'
+            sender: 'user123',
+            message: messageText
+          })
         });
 
         const data = await res.json();
@@ -234,20 +300,27 @@
         if (lastBot) lastBot.remove();
 
         if (data.length === 0) {
-          appendMessage('عذرًا، لايمكنني تقديم المساعدة. يمكنك زيارة موقع الوزارة الرسمي للمزيد من المعلومات https://mop.gov.iq', 'bot-message');
+          appendMessage('عذرًا، لا يمكنني تقديم المساعدة حالياً.', 'bot-message');
         } else {
           data.forEach(msg => {
-            if (msg.text) {
-              appendMessage(msg.text, 'bot-message');
-            }
+            if (msg.text) appendMessage(msg.text, 'bot-message');
+            if (msg.buttons) appendButtons(msg.buttons);
           });
         }
+
       } catch (err) {
-        const lastBot = chatBox.querySelector('.bot-message:last-child');
-        if (lastBot) lastBot.remove();
         appendMessage('حدث خطأ في الاتصال 💥', 'bot-message');
-        console.error(err);
+      } finally {
+        isWaiting = false;
       }
+    }
+
+    function sendMessage() {
+      const text = input.value.trim();
+      if (!text || isWaiting) return;
+      appendMessage(text, 'user-message');
+      input.value = '';
+      sendRasaMessage(text);
     }
 
     input.addEventListener('keydown', e => {
@@ -257,6 +330,15 @@
     function toggleDarkMode() {
       document.body.classList.toggle('dark-mode');
     }
+
+    function focusInput() {
+      input.focus();
+      input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    window.onload = function () {
+      sendRasaMessage('/session_start');
+    };
   </script>
 </body>
 </html>
