@@ -319,7 +319,7 @@
         if (lastBot) lastBot.remove();
 
         if (data.length === 0) {
-          appendMessage('عذرًا، لا يمكنني تقديم المساعدة حالياً.', 'bot-message');
+          appendMessage('عذرًا، لايمكنني تقديم المساعدة اعد صياغة سؤالك او يمكنك زيارة موقع الوزارة الرسمي للمزيد من المعلومات https://mop.gov.iq', 'bot-message');
         } else {
           data.forEach(msg => {
             if (msg.text) appendMessage(msg.text, 'bot-message');
@@ -355,3 +355,4 @@
   </script>
 </body>
 </html>
+
