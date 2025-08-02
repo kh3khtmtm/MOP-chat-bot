@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!DOCTYPE html>
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
@@ -150,6 +150,12 @@
       color: inherit;
     }
 
+    input:disabled {
+      background: #e0e0e0;
+      cursor: not-allowed;
+      color: #999;
+    }
+
     button {
       background: var(--button-bg-light);
       color: white;
@@ -158,17 +164,23 @@
       font-size: 16px;
       cursor: pointer;
       border-radius: 6px;
+      transition: background 0.3s;
     }
 
-    button:hover {
+    button:hover:not(:disabled) {
       background: var(--button-hover-light);
+    }
+
+    button:disabled {
+      background: #999 !important;
+      cursor: not-allowed;
     }
 
     body.dark-mode button {
       background: var(--button-bg-dark);
     }
 
-    body.dark-mode button:hover {
+    body.dark-mode button:hover:not(:disabled) {
       background: var(--button-hover-dark);
     }
 
@@ -186,6 +198,7 @@
       cursor: pointer;
       font-size: 14px;
       color: #000;
+      transition: background 0.3s;
     }
 
     .rasa-button:hover {
@@ -211,6 +224,7 @@
       border-radius: 6px;
       background: var(--button-bg-light);
       color: white;
+      cursor: pointer;
     }
 
     body.dark-mode .toggle-dark {
@@ -258,6 +272,7 @@
   <script>
     const chatBox = document.getElementById('chatBox');
     const input = document.getElementById('userInput');
+    const sendBtn = document.querySelector('.input-area button');
     let isWaiting = false;
 
     // ✅ توليد UUID وتخزينه في localStorage
@@ -322,7 +337,16 @@
           appendMessage('عذرًا، لايمكنني تقديم المساعدة اعد صياغة سؤالك او يمكنك زيارة موقع الوزارة الرسمي للمزيد من المعلومات https://mop.gov.iq', 'bot-message');
         } else {
           data.forEach(msg => {
-            if (msg.text) appendMessage(msg.text, 'bot-message');
+            if (msg.text) {
+              appendMessage(msg.text, 'bot-message');
+
+              // تعطيل الإدخال لو وصلت رسالة الحد الأقصى
+              if (msg.text.includes('⚠️ لقد بلغت الحد المسموح للمراسلة اليوم')) {
+                input.disabled = true;
+                sendBtn.disabled = true;
+                input.placeholder = 'لقد بلغت الحد المسموح للمراسلة اليوم.';
+              }
+            }
             if (msg.buttons) appendButtons(msg.buttons);
           });
         }
@@ -334,11 +358,11 @@
     }
 
     function sendMessage() {
-      const text = input.value.trim();
-      if (!text || isWaiting) return;
-      appendMessage(text, 'user-message');
+      const message = input.value.trim();
+      if (!message || isWaiting || input.disabled) return;
+      appendMessage(message, 'user-message');
       input.value = '';
-      sendRasaMessage(text);
+      sendRasaMessage(message);
     }
 
     input.addEventListener('keydown', e => {
@@ -349,10 +373,8 @@
       document.body.classList.toggle('dark-mode');
     }
 
-    window.onload = function () {
-      sendRasaMessage('/session_start');
-    };
   </script>
 </body>
 </html>
+
 
