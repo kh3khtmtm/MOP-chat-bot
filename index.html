@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!DOCTYPE html>
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>مُخَطط المساعد الرقمي الذكي لوزارة التخطيط</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
       --bg-light: #f1f1f1;
@@ -25,51 +25,54 @@
       --input-border-light: #ccc;
       --input-border-dark: #444;
     }
-    body {
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
       font-family: 'Segoe UI', sans-serif;
       background: var(--bg-light);
       color: var(--text-light);
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
       direction: rtl;
       transition: background 0.3s, color 0.3s;
-      padding: 10px;
     }
+
     body.dark-mode {
       background: var(--bg-dark);
       color: var(--text-dark);
     }
+
     .chat-container {
       width: 100%;
       max-width: 480px;
-      max-height: 90vh;
+      height: 100vh;
       background: var(--chat-bg-light);
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      transition: background 0.3s;
     }
+
     body.dark-mode .chat-container {
       background: var(--chat-bg-dark);
-      box-shadow: 0 0 15px rgba(0,0,0,0.7);
     }
+
     .chat-header {
       background: var(--header-bg-light);
       color: white;
       padding: 15px;
       font-size: 18px;
       text-align: center;
-      user-select: none;
-      transition: background 0.3s;
     }
+
     body.dark-mode .chat-header {
       background: var(--header-bg-dark);
     }
+
     .chat-box {
       flex: 1;
       padding: 10px;
@@ -77,23 +80,23 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+      scroll-behavior: smooth;
       scrollbar-width: thin;
-      scrollbar-color: var(--button-bg-light) transparent;
-      transition: scrollbar-color 0.3s;
     }
-    body.dark-mode .chat-box {
-      scrollbar-color: var(--button-bg-dark) transparent;
-    }
+
     .chat-box::-webkit-scrollbar {
       width: 6px;
     }
+
     .chat-box::-webkit-scrollbar-thumb {
       background-color: var(--button-bg-light);
       border-radius: 3px;
     }
+
     body.dark-mode .chat-box::-webkit-scrollbar-thumb {
       background-color: var(--button-bg-dark);
     }
+
     .message {
       max-width: 75%;
       padding: 10px 15px;
@@ -101,71 +104,80 @@
       font-size: 15px;
       line-height: 1.4;
       word-wrap: break-word;
-      user-select: text;
-      transition: background 0.3s, color 0.3s;
     }
+
     .user-message {
       background: var(--user-msg-light);
       align-self: flex-end;
-      color: var(--text-light);
     }
+
     body.dark-mode .user-message {
       background: var(--user-msg-dark);
-      color: #fff;
+      color: white;
     }
+
     .bot-message {
       background: var(--bot-msg-light);
       align-self: flex-start;
-      color: var(--text-light);
     }
+
     body.dark-mode .bot-message {
       background: var(--bot-msg-dark);
-      color: #fff;
+      color: white;
     }
+
     .input-area {
       display: flex;
       border-top: 1px solid var(--input-border-light);
-      transition: border-color 0.3s;
+      padding: 6px;
+      background: var(--chat-bg-light);
+      position: sticky;
+      bottom: 0;
     }
+
     body.dark-mode .input-area {
       border-top: 1px solid var(--input-border-dark);
+      background: var(--chat-bg-dark);
     }
+
     input {
       flex: 1;
-      padding: 12px 15px;
-      border: none;
+      padding: 12px;
       font-size: 16px;
+      border: none;
       outline: none;
       background: transparent;
-      color: var(--text-light);
-      transition: color 0.3s;
+      color: inherit;
     }
-    body.dark-mode input {
-      color: var(--text-dark);
-    }
+
     button {
       background: var(--button-bg-light);
       color: white;
       border: none;
-      padding: 0 20px;
+      padding: 10px 16px;
       font-size: 16px;
       cursor: pointer;
-      transition: background 0.3s;
+      border-radius: 6px;
     }
+
     button:hover {
       background: var(--button-hover-light);
     }
+
     body.dark-mode button {
       background: var(--button-bg-dark);
     }
+
     body.dark-mode button:hover {
       background: var(--button-hover-dark);
     }
+
     .button-container {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
     }
+
     .rasa-button {
       background: #e0e0e0;
       border: none;
@@ -173,74 +185,67 @@
       padding: 6px 12px;
       cursor: pointer;
       font-size: 14px;
-      transition: background 0.3s;
       color: #000;
     }
+
     .rasa-button:hover {
       background: #d0d0d0;
     }
+
     body.dark-mode .rasa-button {
       background: #444;
       color: #eee;
     }
+
     body.dark-mode .rasa-button:hover {
       background: #555;
     }
+
     .toggle-dark {
       position: fixed;
-      top: 15px;
-      left: 15px;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+      padding: 6px 10px;
+      font-size: 14px;
+      border-radius: 6px;
       background: var(--button-bg-light);
       color: white;
-      border: none;
-      padding: 8px 14px;
-      font-size: 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      user-select: none;
-      z-index: 1000;
-      transition: background 0.3s;
     }
-    .toggle-dark:hover {
-      background: var(--button-hover-light);
-    }
+
     body.dark-mode .toggle-dark {
       background: var(--button-bg-dark);
-    }
-    body.dark-mode .toggle-dark:hover {
-      background: var(--button-hover-dark);
-    }
-    .start-chat-btn {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      background: #28a745;
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      font-size: 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      z-index: 1000;
-      transition: background 0.3s;
-    }
-    .start-chat-btn:hover {
-      background: #218838;
     }
 
     @media (max-width: 600px) {
       .chat-container {
+        border-radius: 0;
         max-width: 100%;
         height: 100vh;
-        border-radius: 0;
-        box-shadow: none;
+      }
+
+      .chat-header {
+        font-size: 16px;
+        padding: 10px;
+      }
+
+      .input-area {
+        padding: 4px;
+      }
+
+      button {
+        font-size: 14px;
+        padding: 8px 12px;
+      }
+
+      input {
+        font-size: 14px;
       }
     }
   </style>
 </head>
 <body>
-  <button class="toggle-dark" onclick="toggleDarkMode()">🌓 وضع داكن</button>
-
+  <button class="toggle-dark" onclick="toggleDarkMode()">🌓</button>
   <div class="chat-container">
     <div class="chat-header">🤖 مُخَطط المساعد الرقمي الذكي لوزارة التخطيط</div>
     <div class="chat-box" id="chatBox"></div>
@@ -285,7 +290,7 @@
       isWaiting = true;
       appendMessage('جاري المعالجة...', 'bot-message');
       try {
-        const res = await fetch(' https://champagne-breakdown-educational-stat.trycloudflare.com/webhooks/rest/webhook', {
+        const res = await fetch('https://champagne-breakdown-educational-stat.trycloudflare.com/webhooks/rest/webhook', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -295,7 +300,6 @@
         });
 
         const data = await res.json();
-
         const lastBot = chatBox.querySelector('.bot-message:last-child');
         if (lastBot) lastBot.remove();
 
@@ -307,7 +311,6 @@
             if (msg.buttons) appendButtons(msg.buttons);
           });
         }
-
       } catch (err) {
         appendMessage('حدث خطأ في الاتصال 💥', 'bot-message');
       } finally {
@@ -331,14 +334,11 @@
       document.body.classList.toggle('dark-mode');
     }
 
-    function focusInput() {
-      input.focus();
-      input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
     window.onload = function () {
       sendRasaMessage('/session_start');
     };
   </script>
 </body>
 </html>
+
+
