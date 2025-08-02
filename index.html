@@ -1,4 +1,4 @@
-<!DOCTYPE html><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
@@ -341,10 +341,10 @@
               appendMessage(msg.text, 'bot-message');
 
               // تعطيل الإدخال لو وصلت رسالة الحد الأقصى
-              if (msg.text.includes('⚠️ لقد بلغت الحد المسموح للمراسلة اليوم')) {
+              if (msg.text.includes('⚠️ لقد بلغت الحد المسموح للمراسلة اليوم. يرجى المحاولة بعد 24 ساعة.')) {
                 input.disabled = true;
                 sendBtn.disabled = true;
-                input.placeholder = 'لقد بلغت الحد المسموح للمراسلة اليوم.';
+                input.placeholder = '⚠️ لقد بلغت الحد المسموح للمراسلة اليوم. يرجى المحاولة بعد 24 ساعة.';
               }
             }
             if (msg.buttons) appendButtons(msg.buttons);
@@ -376,5 +376,6 @@
   </script>
 </body>
 </html>
+
 
 
