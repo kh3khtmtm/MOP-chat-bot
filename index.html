@@ -150,12 +150,6 @@
       color: inherit;
     }
 
-    input:disabled {
-      background: #e0e0e0;
-      cursor: not-allowed;
-      color: #999;
-    }
-
     button {
       background: var(--button-bg-light);
       color: white;
@@ -164,23 +158,17 @@
       font-size: 16px;
       cursor: pointer;
       border-radius: 6px;
-      transition: background 0.3s;
     }
 
-    button:hover:not(:disabled) {
+    button:hover {
       background: var(--button-hover-light);
-    }
-
-    button:disabled {
-      background: #999 !important;
-      cursor: not-allowed;
     }
 
     body.dark-mode button {
       background: var(--button-bg-dark);
     }
 
-    body.dark-mode button:hover:not(:disabled) {
+    body.dark-mode button:hover {
       background: var(--button-hover-dark);
     }
 
@@ -198,7 +186,6 @@
       cursor: pointer;
       font-size: 14px;
       color: #000;
-      transition: background 0.3s;
     }
 
     .rasa-button:hover {
@@ -224,7 +211,6 @@
       border-radius: 6px;
       background: var(--button-bg-light);
       color: white;
-      cursor: pointer;
     }
 
     body.dark-mode .toggle-dark {
@@ -272,7 +258,6 @@
   <script>
     const chatBox = document.getElementById('chatBox');
     const input = document.getElementById('userInput');
-    const sendBtn = document.querySelector('.input-area button');
     let isWaiting = false;
 
     // ✅ توليد UUID وتخزينه في localStorage
@@ -378,6 +363,7 @@
   </script>
 </body>
 </html>
+
 
 
 
