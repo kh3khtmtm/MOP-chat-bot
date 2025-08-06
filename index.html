@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>مُخَطط المساعد الرقمي الذكي لوزارة التخطيط</title>
   <style>
+    /* نفس التنسيقات كما في الأصل */
     :root {
       --bg-light: #f1f1f1;
       --bg-dark: #121212;
@@ -75,12 +76,26 @@
 
     .chat-box {
       flex: 1;
-      padding: 20px 10px 80px;
+      padding: 20px 10px 80px 10px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 10px;
       scroll-behavior: smooth;
+      scrollbar-width: thin;
+    }
+
+    .chat-box::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat-box::-webkit-scrollbar-thumb {
+      background-color: var(--button-bg-light);
+      border-radius: 3px;
+    }
+
+    body.dark-mode .chat-box::-webkit-scrollbar-thumb {
+      background-color: var(--button-bg-dark);
     }
 
     .message {
@@ -115,8 +130,7 @@
     .input-area {
       display: flex;
       border-top: 1px solid var(--input-border-light);
-      padding: 10px;
-      padding-bottom: 20px;
+      padding: 6px;
       background: var(--chat-bg-light);
       position: sticky;
       bottom: 0;
@@ -216,12 +230,8 @@
         padding: 10px;
       }
 
-      .chat-box {
-        padding: 16px 8px 90px;
-      }
-
       .input-area {
-        padding: 8px 10px 20px;
+        padding: 4px;
       }
 
       button {
@@ -252,6 +262,7 @@
     const sendBtn = document.getElementById('sendBtn');
     let isWaiting = false;
 
+    // توليد UUID وتخزينه في localStorage
     function generateUUID() {
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         const r = Math.random() * 16 | 0;
@@ -266,15 +277,23 @@
       localStorage.setItem('user_id', userId);
     }
 
+
     function checkLimitStatus() {
       const limitDataRaw = localStorage.getItem('limit_reached');
-      if (!limitDataRaw) return enableInput();
+      if (!limitDataRaw) {
+        enableInput();
+        return;
+      }
       const limitData = JSON.parse(limitDataRaw);
-      const now = Date.now();
-      if (limitData.reached && (now - limitData.timestamp < 86400000)) {
-        disableInputWithMessage();
+      if (limitData.reached) {
+        const now = Date.now();
+        if (now - limitData.timestamp < 24 * 60 * 60 * 1000) {
+          disableInputWithMessage();
+        } else {
+          localStorage.removeItem('limit_reached');
+          enableInput();
+        }
       } else {
-        localStorage.removeItem('limit_reached');
         enableInput();
       }
     }
@@ -318,18 +337,22 @@
     }
 
     async function sendRasaMessage(messageText) {
-      if (input.disabled) return;
+      if (input.disabled) return;  // لا ترسل إذا الحقل معطل
       isWaiting = true;
       appendMessage('جاري المعالجة...', 'bot-message');
       try {
         const res = await fetch('http://localhost:5005/webhooks/rest/webhook', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sender: userId, message: messageText })
+          body: JSON.stringify({
+            sender: userId,
+            message: messageText
+          })
         });
 
         const data = await res.json();
-        chatBox.querySelector('.bot-message:last-child')?.remove();
+        const lastBot = chatBox.querySelector('.bot-message:last-child');
+        if (lastBot) lastBot.remove();
 
         if (data.length === 0) {
           appendMessage('عذرًا، لايمكنني تقديم المساعدة اعد صياغة سؤالك او يمكنك زيارة موقع الوزارة الرسمي للمزيد من المعلومات https://mop.gov.iq', 'bot-message');
@@ -337,16 +360,23 @@
           data.forEach(msg => {
             if (msg.text) {
               appendMessage(msg.text, 'bot-message');
-              if (msg.text.includes('⚠️ لقد بلغت الحد المسموح')) {
+
+              // تعطيل الإدخال وتخزين الحالة لو وصلت رسالة الحد الأقصى
+              if (msg.text.includes('⚠️ لقد بلغت الحد المسموح للمراسلة اليوم. يرجى المحاولة بعد 24 ساعة.')) {
                 disableInputWithMessage();
-                localStorage.setItem('limit_reached', JSON.stringify({ reached: true, timestamp: Date.now() }));
+                localStorage.setItem('limit_reached', JSON.stringify({
+                  reached: true,
+                  timestamp: Date.now()
+                }));
               }
             }
             if (msg.buttons) appendButtons(msg.buttons);
           });
         }
-      } catch {
-        if (!input.disabled) appendMessage('حدث خطأ في الاتصال 💥', 'bot-message');
+      } catch (err) {
+        if (!input.disabled) {
+          appendMessage('حدث خطأ في الاتصال 💥', 'bot-message');
+        }
       } finally {
         isWaiting = false;
       }
@@ -367,9 +397,7 @@
     function toggleDarkMode() {
       document.body.classList.toggle('dark-mode');
     }
-
     window.onload = function () {
-      checkLimitStatus();
       sendRasaMessage('/session_start');
     };
   </script>
