@@ -277,11 +277,6 @@
       localStorage.setItem('user_id', userId);
     }
 
-    // فحص حالة الحد المسموح عند تحميل الصفحة
-    window.onload = function () {
-      checkLimitStatus();
-      sendRasaMessage('/session_start');
-    };
 
     function checkLimitStatus() {
       const limitDataRaw = localStorage.getItem('limit_reached');
@@ -346,7 +341,7 @@
       isWaiting = true;
       appendMessage('جاري المعالجة...', 'bot-message');
       try {
-        const res = await fetch('https://squad-twisted-work-riding.trycloudflare.com/webhooks/rest/webhook', {
+        const res = await fetch('https://bags-slightly-liable-seekers.trycloudflare.com/webhooks/rest/webhook', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
