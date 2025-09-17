@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>مُخَطط المساعد الرقمي الذكي لوزارة التخطيط</title>
   <style>
-    /* نفس التنسيقات كما في الأصل */
     :root {
       --bg-light: #f1f1f1;
       --bg-dark: #121212;
@@ -262,7 +261,6 @@
     const sendBtn = document.getElementById('sendBtn');
     let isWaiting = false;
 
-    // توليد UUID وتخزينه في localStorage
     function generateUUID() {
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         const r = Math.random() * 16 | 0;
@@ -337,7 +335,7 @@
     }
 
     async function sendRasaMessage(messageText) {
-      if (input.disabled) return;  // لا ترسل إذا الحقل معطل
+      if (input.disabled) return; 
       isWaiting = true;
       appendMessage('جاري المعالجة...', 'bot-message');
       try {
@@ -361,7 +359,6 @@
             if (msg.text) {
               appendMessage(msg.text, 'bot-message');
 
-              // تعطيل الإدخال وتخزين الحالة لو وصلت رسالة الحد الأقصى
               if (msg.text.includes('⚠️ لقد بلغت الحد المسموح للمراسلة اليوم. يرجى المحاولة بعد 24 ساعة.')) {
                 disableInputWithMessage();
                 localStorage.setItem('limit_reached', JSON.stringify({
@@ -403,6 +400,7 @@
   </script>
 </body>
 </html>
+
 
 
 
